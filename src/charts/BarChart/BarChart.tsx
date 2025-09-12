@@ -52,7 +52,7 @@ export default function BarChart({
               })}
               {/* 막대 */}
               {data.map((d) => {
-                const x = xBand.x(d.label);
+                const x = xBand.getX(d.label);
                 const bw = xBand.bandWidth;
                 const h = innerHeight - yScale(d.value);
                 const y = yScale(d.value);

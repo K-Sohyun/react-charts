@@ -43,5 +43,5 @@ export const bandScale = (
   const band = step * (1 - padding); // 막대 너비
   const offset = rMin + step * padding; // 첫 막대 시작 위치
   const map = new Map(labels.map((lab, i) => [lab, offset + i * step]));
-  return { x: (lab: string) => map.get(lab) ?? 0, bandWidth: band };
+  return { getX: (lab: string) => map.get(lab) ?? 0, bandWidth: band }; // 객체 반환
 };
