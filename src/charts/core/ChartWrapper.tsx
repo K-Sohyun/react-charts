@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 
-type Props = {
+type ChartWrapperProps = {
   width?: number;
   height?: number;
   padding?: { top: number; right: number; bottom: number; left: number };
@@ -15,7 +15,7 @@ export default function ChartWrapper({
   height = 360,
   padding = { top: 24, right: 24, bottom: 40, left: 40 },
   children,
-}: Props) {
+}: ChartWrapperProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [w, setW] = useState<number>(width ?? 640);
 

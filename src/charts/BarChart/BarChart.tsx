@@ -3,13 +3,13 @@ import { linearScale, bandScale } from "../core/scales";
 import styles from "./BarChart.module.scss";
 
 export type BarDatum = { label: string; value: number };
-type Props = { data: BarDatum[]; height?: number; barColor?: string };
+type BarChartProps = { data: BarDatum[]; height?: number; barColor?: string };
 
 export default function BarChart({
   data,
   height = 360,
   barColor = "#60a5fa",
-}: Props) {
+}: BarChartProps) {
   const labels = data.map((d) => d.label);
   const values = data.map((d) => d.value);
   const max = Math.max(...values, 0);
@@ -28,7 +28,7 @@ export default function BarChart({
               {ticks.map((t, i) => {
                 const y = yScale(t);
                 return (
-                  <g key={i}>
+                  <g key={`${t}-${i}`}>
                     <line
                       x1={0}
                       y1={y}
