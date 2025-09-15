@@ -29,7 +29,7 @@ export const linearScale = (
  * @param rMin     출력 범위 시작 (x축 시작 좌표)
  * @param rMax     출력 범위 끝 (x축 끝 좌표)
  * @param padding  밴드 사이 여백 비율 (0~1, 기본 0.1)
- * @returns        x(라벨→좌표), bandWidth(밴드 너비)
+ * @returns        getX(라벨→좌표), bandWidth(막대 너비), gapWidth(간격 너비)
  */
 export const bandScale = (
   labels: string[],
@@ -37,11 +37,25 @@ export const bandScale = (
   rMax: number,
   padding = 0.1
 ) => {
-  const n = Math.max(labels.length, 1); // 라벨 개수
-  const total = rMax - rMin; // 전체 범위
-  const step = total / (n + padding * (n + 1)); // 밴드+여백 간격
-  const band = step * (1 - padding); // 막대 너비
-  const offset = rMin + step * padding; // 첫 막대 시작 위치
-  const map = new Map(labels.map((lab, i) => [lab, offset + i * step]));
-  return { getX: (lab: string) => map.get(lab) ?? 0, bandWidth: band }; // 객체 반환
+  const n = Math.max(labels.length, 1); // 라벨 개수 (0 방지)
+  const total = rMax - rMin; // 전체 출력 범위
+
+  const totalGap = total * padding; // 전체 여백 크기
+  const gapWidth = totalGap / (n + 1); // gap 개수: n+1 → 좌우 대칭
+  const barWidth = (total - totalGap) / n; // 막대 너비
+
+  // 각 라벨의 x 좌표 계산
+  const offset = rMin + gapWidth; // 첫 막대 시작 위치
+  const map = new Map(
+    labels.map((lab, i) => [
+      lab,
+      offset + i * (barWidth + gapWidth), // (gap + bar) 반복
+    ])
+  );
+
+  return {
+    getX: (lab: string) => map.get(lab) ?? 0, // 라벨별 x좌표
+    bandWidth: barWidth, // 막대 너비
+    gapWidth, // gap 너비 (참고용)
+  };
 };
