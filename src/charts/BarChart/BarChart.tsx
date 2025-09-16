@@ -38,7 +38,7 @@ export default function BarChart({
     <div className={styles.wrapper}>
       <ChartWrapper height={height} padding={padding}>
         {({ innerWidth, innerHeight }) => {
-          const xBand = bandScale(labels, 0, innerWidth, 0.2);
+          const xBand = bandScale(labels, 0, innerWidth, 0.4);
           const yScale = linearScale(yMin, yMax, innerHeight, 0);
           const ticks = [yMin, Math.round((yMin + yMax) / 2), yMax];
 
