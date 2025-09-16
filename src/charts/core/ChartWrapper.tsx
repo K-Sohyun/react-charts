@@ -1,9 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 
+type Padding = { top: number; right: number; bottom: number; left: number };
+
 type ChartWrapperProps = {
   width?: number;
   height?: number;
-  padding?: { top: number; right: number; bottom: number; left: number };
+  padding?: Partial<Padding>;
   children: (inner: {
     innerWidth: number;
     innerHeight: number;
@@ -13,7 +15,7 @@ type ChartWrapperProps = {
 export default function ChartWrapper({
   width,
   height = 360,
-  padding = { top: 24, right: 24, bottom: 40, left: 40 },
+  padding,
   children,
 }: ChartWrapperProps) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -30,9 +32,12 @@ export default function ChartWrapper({
     return () => ro.disconnect();
   }, [width]);
 
+  const defaultPadding: Padding = { top: 24, right: 24, bottom: 40, left: 40 };
+  const pad: Padding = { ...defaultPadding, ...(padding ?? {}) };
+
   const outerW = width ?? w;
-  const innerWidth = outerW - padding.left - padding.right;
-  const innerHeight = height - padding.top - padding.bottom;
+  const innerWidth = outerW - pad.left - pad.right;
+  const innerHeight = height - pad.top - pad.bottom;
 
   return (
     <div ref={ref} style={{ width: width ? `${width}px` : "100%" }}>
@@ -42,7 +47,7 @@ export default function ChartWrapper({
         viewBox={`0 0 ${outerW} ${height}`}
         style={{ maxWidth: "100%", height: "auto", display: "block" }}
       >
-        <g transform={`translate(${padding.left},${padding.top})`}>
+        <g transform={`translate(${pad.left},${pad.top})`}>
           {children({ innerWidth, innerHeight })}
         </g>
       </svg>
