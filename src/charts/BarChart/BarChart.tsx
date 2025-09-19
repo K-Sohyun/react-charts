@@ -1,5 +1,10 @@
+import { useRef, useState, useEffect } from "react";
 import ChartWrapper from "../core/ChartWrapper";
 import { linearScale, bandScale } from "../core/scales";
+import { makeTicks } from "../core/ticks";
+import type { YTicks } from "../core/ticks";
+import AxisY from "./AxisY";
+import AxisX from "./AxisX";
 import styles from "./BarChart.module.scss";
 
 export type BarDatum = { label: string; value: number };
@@ -9,7 +14,12 @@ type BarChartProps = {
   height?: number;
   barColor?: string;
   rotateLabels?: boolean;
-  yDomain?: { min?: number; max: number };
+  xPadding?: number;
+  y?: {
+    min?: number;
+    max?: number;
+    ticks?: YTicks;
+  };
   padding?: Partial<{
     top: number;
     right: number;
@@ -18,99 +28,102 @@ type BarChartProps = {
   }>;
 };
 
+type TooltipState = {
+  show: boolean;
+  left: number;
+  top: number;
+  label: string;
+  value: number;
+};
+
 export default function BarChart({
   data,
   height = 360,
   barColor = "#60a5fa",
   rotateLabels = false,
-  yDomain,
+  xPadding = 0.2,
+  y,
   padding,
 }: BarChartProps) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+
+  // 애니메이션 발동
+  const [isAnimated, setIsAnimated] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setIsAnimated(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   const labels = data.map((d) => d.label);
   const values = data.map((d) => d.value);
 
-  // 데이터 기반 기본값
   const dataMax = Math.max(...values, 0);
-  const yMin = yDomain?.min ?? 0;
-  const yMax = yDomain?.max ?? dataMax;
+  const yMin = y?.min ?? 0;
+  const yMax = y?.max ?? dataMax;
+
+  const ticks = makeTicks(yMin, yMax, y?.ticks);
+
+  // 툴팁 업데이트 단일 함수
+  const updateTooltip = (
+    e: React.MouseEvent<SVGRectElement, MouseEvent> | null,
+    payload?: { label: string; value: number }
+  ) => {
+    if (!e || !payload) {
+      setTooltip(null);
+      return;
+    }
+    const rect = wrapperRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setTooltip({
+      show: true,
+      left: e.clientX - rect.left,
+      top: e.clientY - rect.top - 8,
+      label: payload.label,
+      value: payload.value,
+    });
+  };
 
   return (
-    <div className={styles.wrapper}>
+    <div ref={wrapperRef} className={styles.wrapper}>
       <ChartWrapper height={height} padding={padding}>
         {({ innerWidth, innerHeight }) => {
-          const xBand = bandScale(labels, 0, innerWidth, 0.4);
+          const xBand = bandScale(labels, 0, innerWidth, xPadding);
           const yScale = linearScale(yMin, yMax, innerHeight, 0);
-          const ticks = [yMin, Math.round((yMin + yMax) / 2), yMax];
 
           return (
             <>
-              {/* 그리드 & Y축 라벨 */}
-              {ticks.map((t, i) => {
-                const y = yScale(t);
-                return (
-                  <g key={`${t}-${i}`}>
-                    <line
-                      x1={0}
-                      y1={y}
-                      x2={innerWidth}
-                      y2={y}
-                      stroke="#e5e7eb"
-                      strokeDasharray="4 4"
-                    />
-                    <text
-                      x={-8}
-                      y={y}
-                      fontSize={12}
-                      textAnchor="end"
-                      dominantBaseline="middle"
-                      fill="#6b7280"
-                    >
-                      {t}
-                    </text>
-                  </g>
-                );
-              })}
+              <AxisY ticks={ticks} scale={yScale} innerWidth={innerWidth} />
+              <AxisX
+                labels={labels}
+                getX={xBand.getX}
+                bandWidth={xBand.bandWidth}
+                innerHeight={innerHeight}
+                rotate={rotateLabels}
+              />
 
-              {/* X축 라벨 */}
-              {labels.map((lab) => {
-                const x = xBand.getX(lab);
-                const bw = xBand.bandWidth;
-                const cx = x + bw / 2; // 막대 중앙
-                return (
-                  <text
-                    key={`xlab-${lab}`}
-                    x={cx}
-                    y={innerHeight + 20}
-                    fontSize={12}
-                    fill="#6b7280"
-                    textAnchor={rotateLabels ? "end" : "middle"}
-                    dominantBaseline="hanging"
-                    transform={
-                      rotateLabels
-                        ? `rotate(-40, ${cx}, ${innerHeight + 10})`
-                        : ""
-                    }
-                  >
-                    {lab}
-                  </text>
-                );
-              })}
-
-              {/* 막대 */}
-              {data.map((d) => {
+              {data.map((d, i) => {
                 const x = xBand.getX(d.label);
                 const bw = xBand.bandWidth;
-                const h = innerHeight - yScale(d.value);
-                const y = yScale(d.value);
+                const yPos = yScale(d.value);
+                const h = innerHeight - yPos;
+
                 return (
                   <rect
                     key={d.label}
                     x={x}
-                    y={y}
+                    y={yPos}
                     width={bw}
                     height={h}
                     fill={barColor}
                     rx={6}
+                    onMouseEnter={(e) => updateTooltip(e, d)}
+                    onMouseMove={(e) => updateTooltip(e, d)}
+                    onMouseLeave={() => updateTooltip(null)}
+                    className={`${styles.bar} ${
+                      isAnimated ? styles.barAnimated : ""
+                    }`}
+                    style={{ transitionDelay: `${i * 40}ms` }}
                   />
                 );
               })}
@@ -118,6 +131,16 @@ export default function BarChart({
           );
         }}
       </ChartWrapper>
+
+      {/* HTML 툴팁 */}
+      {tooltip?.show && (
+        <div
+          className={styles.tooltip}
+          style={{ left: tooltip.left, top: tooltip.top }}
+        >
+          <strong>{tooltip.label}</strong> · {tooltip.value}
+        </div>
+      )}
     </div>
   );
 }
