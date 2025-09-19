@@ -26,7 +26,7 @@ export default function AxisX({
             fill="#777"
             textAnchor={rotate ? "end" : "middle"}
             dominantBaseline="hanging"
-            transform={rotate ? `rotate(-40, ${cx}, ${innerHeight + 10})` : ""}
+            transform={rotate ? `rotate(-40, ${cx}, ${innerHeight + 20})` : ""}
           >
             {lab}
           </text>

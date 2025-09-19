@@ -1,5 +1,6 @@
 .wrapper {
   position: relative;
+  margin-top: 4rem;
 }
 
 .bar {
@@ -19,14 +20,14 @@
   position: absolute;
   pointer-events: none;
   transform: translate(-50%, -100%);
-  padding: 6px 8px;
+  padding: 0.6rem 0.8rem;
   background: #111827;
   color: #fff;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 0.6rem;
+  font-size: 1.2rem;
   line-height: 1.2;
   white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.2);
   z-index: 10;
 }
 
@@ -36,6 +37,6 @@
   left: 50%;
   top: 100%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
+  border: 0.6rem solid transparent;
   border-top-color: #111827;
 }

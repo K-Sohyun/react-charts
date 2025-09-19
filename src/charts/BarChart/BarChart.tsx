@@ -3,8 +3,8 @@ import ChartWrapper from "../core/ChartWrapper";
 import { linearScale, bandScale } from "../core/scales";
 import { makeTicks } from "../core/ticks";
 import type { YTicks } from "../core/ticks";
-import AxisY from "./AxisY";
-import AxisX from "./AxisX";
+import AxisY from "../core/AxisY";
+import AxisX from "../core/AxisX";
 import styles from "./BarChart.module.scss";
 
 export type BarDatum = { label: string; value: number };
