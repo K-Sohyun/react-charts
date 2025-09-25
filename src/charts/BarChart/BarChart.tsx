@@ -3,23 +3,23 @@ import ChartWrapper from "../core/ChartWrapper";
 import { linearScale, bandScale } from "../core/scales";
 import { makeTicks } from "../core/ticks";
 import type { YTicks } from "../core/ticks";
-import AxisY from "../core/AxisY";
-import AxisX from "../core/AxisX";
+import AxisLinear from "../core/AxisLinear";
+import AxisBand from "../core/AxisBand";
 import styles from "./BarChart.module.scss";
 
 export type BarDatum = { label: string; value: number };
+type Orientation = "vertical" | "horizontal";
 
 type BarChartProps = {
   data: BarDatum[];
+  orientation?: Orientation;
   height?: number;
   barColor?: string;
-  rotateLabels?: boolean;
-  xPadding?: number;
-  y?: {
-    min?: number;
-    max?: number;
-    ticks?: YTicks;
-  };
+  rotateLabels?: boolean; // vertical에서 X 라벨 회전
+  xPadding?: number; // vertical: X 밴드 padding
+  bandPadding?: number; // horizontal: Y 밴드 padding
+  y?: { min?: number; max?: number; ticks?: YTicks }; // vertical 값축
+  valueAxis?: { min?: number; max?: number; ticks?: YTicks }; // horizontal 값축
   padding?: Partial<{
     top: number;
     right: number;
@@ -38,17 +38,18 @@ type TooltipState = {
 
 export default function BarChart({
   data,
+  orientation = "vertical",
   height = 360,
   barColor = "#60a5fa",
   rotateLabels = false,
   xPadding = 0.2,
+  bandPadding = 0.2,
   y,
+  valueAxis,
   padding,
 }: BarChartProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
-
-  // 애니메이션 발동
   const [isAnimated, setIsAnimated] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => setIsAnimated(true));
@@ -57,75 +58,127 @@ export default function BarChart({
 
   const labels = data.map((d) => d.label);
   const values = data.map((d) => d.value);
+  const dataMax = values.length ? Math.max(...values, 0) : 0;
 
-  const dataMax = Math.max(...values, 0);
-  const yMin = y?.min ?? 0;
-  const yMax = y?.max ?? dataMax;
+  const isVertical = orientation === "vertical";
+  const vMin = isVertical ? y?.min ?? 0 : valueAxis?.min ?? 0;
+  const vMaxRaw = isVertical ? y?.max ?? dataMax : valueAxis?.max ?? dataMax;
+  const vMax = vMaxRaw === vMin ? vMin + 1 : vMaxRaw;
+  const ticks = makeTicks(vMin, vMax, isVertical ? y?.ticks : valueAxis?.ticks);
 
-  const ticks = makeTicks(yMin, yMax, y?.ticks);
-
-  // 툴팁 업데이트 단일 함수
   const updateTooltip = (
     e: React.MouseEvent<SVGRectElement, MouseEvent> | null,
     payload?: { label: string; value: number }
   ) => {
-    if (!e || !payload) {
-      setTooltip(null);
-      return;
-    }
+    if (!e || !payload) return setTooltip(null);
     const rect = wrapperRef.current?.getBoundingClientRect();
     if (!rect) return;
     setTooltip({
       show: true,
       left: e.clientX - rect.left,
       top: e.clientY - rect.top - 8,
-      label: payload.label,
-      value: payload.value,
+      ...payload,
     });
   };
 
   return (
-    <div ref={wrapperRef} className={styles.wrapper}>
+    <div
+      ref={wrapperRef}
+      className={`${styles.wrapper} ${isVertical ? styles.vert : styles.hori}`}
+    >
       <ChartWrapper height={height} padding={padding}>
         {({ innerWidth, innerHeight }) => {
-          const xBand = bandScale(labels, 0, innerWidth, xPadding);
-          const yScale = linearScale(yMin, yMax, innerHeight, 0);
+          const band = isVertical
+            ? bandScale(labels, 0, innerWidth, xPadding) // X 밴드
+            : bandScale(labels, 0, innerHeight, bandPadding); // Y 밴드
+
+          const valueScale = isVertical
+            ? linearScale(vMin, vMax, innerHeight, 0) // 값→Y
+            : linearScale(vMin, vMax, 0, innerWidth); // 값→X
 
           return (
             <>
-              <AxisY ticks={ticks} scale={yScale} innerWidth={innerWidth} />
-              <AxisX
-                labels={labels}
-                getX={xBand.getX}
-                bandWidth={xBand.bandWidth}
-                innerHeight={innerHeight}
-                rotate={rotateLabels}
+              {/* 1) 값 축 */}
+              <AxisLinear
+                ticks={ticks}
+                scale={valueScale}
+                length={isVertical ? innerWidth : innerHeight}
+                side={isVertical ? "left" : "bottom"}
+                grid
               />
 
-              {data.map((d, i) => {
-                const x = xBand.getX(d.label);
-                const bw = xBand.bandWidth;
-                const yPos = yScale(d.value);
-                const h = innerHeight - yPos;
-
-                return (
-                  <rect
-                    key={d.label}
-                    x={x}
-                    y={yPos}
-                    width={bw}
-                    height={h}
-                    fill={barColor}
-                    rx={6}
-                    onMouseEnter={(e) => updateTooltip(e, d)}
-                    onMouseMove={(e) => updateTooltip(e, d)}
-                    onMouseLeave={() => updateTooltip(null)}
-                    className={`${styles.bar} ${
-                      isAnimated ? styles.barAnimated : ""
-                    }`}
-                    style={{ transitionDelay: `${i * 40}ms` }}
+              {/* 2) 범주 축 */}
+              {isVertical ? (
+                <g transform={`translate(0, ${innerHeight})`}>
+                  <AxisBand
+                    labels={labels}
+                    getPos={band.getX}
+                    bandWidth={band.bandWidth}
+                    side="bottom"
+                    rotate={rotateLabels}
+                    tickPadding={20}
                   />
-                );
+                </g>
+              ) : (
+                <AxisBand
+                  labels={labels}
+                  getPos={band.getX}
+                  bandWidth={band.bandWidth}
+                  side="left"
+                />
+              )}
+
+              {/* 3) 막대 */}
+              {data.map((d, i) => {
+                if (isVertical) {
+                  const x = band.getX(d.label);
+                  const bw = band.bandWidth;
+                  const y1 = valueScale(d.value);
+                  const h = innerHeight - y1;
+                  return (
+                    <rect
+                      key={d.label}
+                      x={x}
+                      y={y1}
+                      width={bw}
+                      height={h}
+                      rx={6}
+                      fill={barColor}
+                      className={`${styles.bar} ${
+                        isAnimated ? styles.barAnimated : ""
+                      }`}
+                      style={{ transitionDelay: `${i * 40}ms` }}
+                      onMouseEnter={(e) => updateTooltip(e, d)}
+                      onMouseMove={(e) => updateTooltip(e, d)}
+                      onMouseLeave={() => setTooltip(null)}
+                    />
+                  );
+                } else {
+                  const yPos = band.getX(d.label);
+                  const bh = band.bandWidth;
+                  const x0 = valueScale(0);
+                  const x1 = valueScale(d.value);
+                  const x = Math.min(x0, x1);
+                  const w = Math.abs(x1 - x0);
+                  return (
+                    <rect
+                      key={d.label}
+                      x={x}
+                      y={yPos}
+                      width={w}
+                      height={bh}
+                      rx={6}
+                      fill={barColor}
+                      className={`${styles.bar} ${
+                        isAnimated ? styles.barAnimated : ""
+                      }`}
+                      style={{ transitionDelay: `${i * 40}ms` }}
+                      onMouseEnter={(e) => updateTooltip(e, d)}
+                      onMouseMove={(e) => updateTooltip(e, d)}
+                      onMouseLeave={() => setTooltip(null)}
+                    />
+                  );
+                }
               })}
             </>
           );

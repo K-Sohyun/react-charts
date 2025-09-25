@@ -3,19 +3,35 @@
   margin-top: 4rem;
 }
 
+/* 공통 막대 스타일 */
 .bar {
   transform-box: fill-box; /* SVG 기준 박스 */
-  transform-origin: bottom; /* 아래를 기준으로 */
-  transform: scaleY(0);
-  transition: transform 480ms ease;
+  transition: transform 480ms ease, opacity 480ms ease;
   will-change: transform;
+  opacity: 0.8;
 }
 
-/* isAnimated true 일 때 */
-.barAnimated {
+/* 세로형: 바닥에서 위로 */
+.vert .bar {
+  transform-origin: bottom center;
+  transform: scaleY(0);
+}
+.vert .barAnimated {
   transform: scaleY(1);
+  opacity: 1;
 }
 
+/* 가로형: 왼쪽에서 오른쪽으로 */
+.hori .bar {
+  transform-origin: center left;
+  transform: scaleX(0);
+}
+.hori .barAnimated {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* 툴팁 */
 .tooltip {
   position: absolute;
   pointer-events: none;
