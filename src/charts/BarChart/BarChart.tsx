@@ -130,10 +130,12 @@ export default function BarChart({
 
               {/* 3) 막대 */}
               {data.map((d, i) => {
+                const safeValue = Math.max(0, d.value); // 음수면 0으로
+
                 if (isVertical) {
                   const x = band.getX(d.label);
                   const bw = band.bandWidth;
-                  const y1 = valueScale(d.value);
+                  const y1 = valueScale(safeValue);
                   const h = innerHeight - y1;
                   return (
                     <rect
@@ -157,7 +159,7 @@ export default function BarChart({
                   const yPos = band.getX(d.label);
                   const bh = band.bandWidth;
                   const x0 = valueScale(0);
-                  const x1 = valueScale(d.value);
+                  const x1 = valueScale(safeValue);
                   const x = Math.min(x0, x1);
                   const w = Math.abs(x1 - x0);
                   return (

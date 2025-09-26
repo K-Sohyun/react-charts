@@ -162,7 +162,7 @@ export default function BarGroupChart({
               {data.map((d, gi) => {
                 const base = outer.getX(d.label);
                 return inferredKeys.map((key, si) => {
-                  const val = d.values[key] ?? 0;
+                  const val = Math.max(0, d.values[key] ?? 0); // 음수면 0으로
 
                   if (isVertical) {
                     const x = base + inner.getX(key);
