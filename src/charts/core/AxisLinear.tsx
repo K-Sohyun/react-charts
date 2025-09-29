@@ -1,13 +1,12 @@
 type AxisLinearProps = {
-  ticks: number[];
-  scale: (v: number) => number;
-  length: number; // side="left"면 innerWidth, side="bottom"이면 innerHeight
-  side: "left" | "bottom"; // "left": 왼쪽 값 축(Y), "bottom": 아래 값 축(X)
-  formatTick?: (v: number) => string | number;
-  grid?: boolean;
-  gridDash?: string;
-  fontSize?: number;
-  tickPadding?: number;
+  ticks: number[]; // 축에 표시할 눈금선 리스트
+  scale: (v: number) => number; // 값을 픽셀좌표로 바꾸는 함수 (linearScale)
+  length: number; // 그리드 라인의 길이 (left면 innerWidth, bottom이면 innerHeight)
+  side: "left" | "bottom"; // 축의 방향 결정
+  grid?: boolean; // 그리드 라인 표시 여부
+  gridDash?: string; // 점선 패턴 "4 4" 같은 것
+  fontSize?: number; // 라벨 폰트 크기
+  tickPadding?: number; // 라벨과 축 사이 여백
 };
 
 export default function AxisLinear({
@@ -15,7 +14,6 @@ export default function AxisLinear({
   scale,
   length,
   side,
-  formatTick,
   grid = true,
   gridDash = "4 4",
   fontSize = 12,
@@ -48,9 +46,7 @@ export default function AxisLinear({
               textAnchor="end"
               dominantBaseline="middle"
               fill="#777"
-            >
-              {formatTick ? formatTick(t) : t}
-            </text>
+            ></text>
           </g>
         ) : (
           <g key={`${t}-${i}`}>
@@ -72,9 +68,7 @@ export default function AxisLinear({
               textAnchor="middle"
               dominantBaseline="hanging"
               fill="#777"
-            >
-              {formatTick ? formatTick(t) : t}
-            </text>
+            ></text>
           </g>
         );
       })}
