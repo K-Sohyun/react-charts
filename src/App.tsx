@@ -31,7 +31,12 @@ export default function App() {
           orientation="vertical"
           rotateLabels
           padding={{ bottom: 60, left: 50 }}
-          y={{ min: 0, max: 100, ticks: { step: 25 } }}
+          y={{
+            min: 0,
+            max: 100,
+            ticks: { step: 25 },
+            formatTick: (v) => `${v}명`,
+          }}
           barColor="#60a5fa"
           xPadding={0.2}
         />
@@ -44,7 +49,12 @@ export default function App() {
           data={sample}
           orientation="horizontal"
           padding={{ left: 70, bottom: 30 }}
-          valueAxis={{ min: 0, max: 100, ticks: { step: 25 } }}
+          valueAxis={{
+            min: 0,
+            max: 100,
+            ticks: { step: 25 },
+            formatTick: (v) => `${v}%`,
+          }}
           barColor="#60a5fa"
           bandPadding={0.2}
         />

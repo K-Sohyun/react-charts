@@ -18,8 +18,18 @@ type BarChartProps = {
   rotateLabels?: boolean; // vertical에서 X 라벨 회전
   xPadding?: number; // vertical: X 밴드 padding
   bandPadding?: number; // horizontal: Y 밴드 padding
-  y?: { min?: number; max?: number; ticks?: YTicks }; // vertical 값축
-  valueAxis?: { min?: number; max?: number; ticks?: YTicks }; // horizontal 값축
+  y?: {
+    min?: number;
+    max?: number;
+    ticks?: YTicks;
+    formatTick?: (v: number) => string | number;
+  }; // vertical 값축
+  valueAxis?: {
+    min?: number;
+    max?: number;
+    ticks?: YTicks;
+    formatTick?: (v: number) => string | number;
+  }; // horizontal 값축
   padding?: Partial<{
     top: number;
     right: number;
@@ -105,6 +115,7 @@ export default function BarChart({
                 length={isVertical ? innerWidth : innerHeight}
                 side={isVertical ? "left" : "bottom"}
                 grid
+                formatTick={isVertical ? y?.formatTick : valueAxis?.formatTick}
               />
 
               {/* 2) 범주 축 */}

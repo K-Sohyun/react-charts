@@ -4,6 +4,7 @@ type AxisLinearProps = {
   length: number; // 그리드 라인의 길이 (left면 innerWidth, bottom이면 innerHeight)
   side: "left" | "bottom"; // 축의 방향 결정
   grid?: boolean; // 그리드 라인 표시 여부
+  formatTick?: (v: number) => string | number; // 눈금 라벨 포맷 함수
   gridDash?: string; // 점선 패턴 "4 4" 같은 것
   fontSize?: number; // 라벨 폰트 크기
   tickPadding?: number; // 라벨과 축 사이 여백
@@ -14,6 +15,7 @@ export default function AxisLinear({
   scale,
   length,
   side,
+  formatTick,
   grid = true,
   gridDash = "4 4",
   fontSize = 12,
@@ -47,7 +49,7 @@ export default function AxisLinear({
               dominantBaseline="middle"
               fill="#777"
             >
-              {t}
+              {formatTick ? formatTick(t) : t}
             </text>
           </g>
         ) : (
@@ -71,7 +73,7 @@ export default function AxisLinear({
               dominantBaseline="hanging"
               fill="#777"
             >
-              {t}
+              {formatTick ? formatTick(t) : t}
             </text>
           </g>
         );
