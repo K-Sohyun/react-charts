@@ -46,7 +46,9 @@ export default function AxisLinear({
               textAnchor="end"
               dominantBaseline="middle"
               fill="#777"
-            ></text>
+            >
+              {t}
+            </text>
           </g>
         ) : (
           <g key={`${t}-${i}`}>
@@ -68,7 +70,9 @@ export default function AxisLinear({
               textAnchor="middle"
               dominantBaseline="hanging"
               fill="#777"
-            ></text>
+            >
+              {t}
+            </text>
           </g>
         );
       })}
