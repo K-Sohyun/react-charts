@@ -12,10 +12,10 @@ const sample: BarDatum[] = [
 ];
 
 const grouped: GroupBarDatum[] = [
-  { label: "Jan", values: { data1: 42, data2: 72 } },
-  { label: "Feb", values: { data1: 31, data2: 22 } },
-  { label: "Mar", values: { data1: 50, data2: 68 } },
-  { label: "Apr", values: { data1: 46, data2: 84 } },
+  { label: "Jan", values: { data1: 2000, data2: 4000 } },
+  { label: "Feb", values: { data1: 6400, data2: 5800 } },
+  { label: "Mar", values: { data1: 3800, data2: 6200 } },
+  { label: "Apr", values: { data1: 8400, data2: 6400 } },
 ];
 
 export default function App() {
@@ -52,7 +52,7 @@ export default function App() {
           valueAxis={{
             min: 0,
             max: 100,
-            ticks: { step: 25 },
+            ticks: { step: 10 },
             formatTick: (v) => `${v}%`,
           }}
           barColor="#60a5fa"
@@ -71,7 +71,12 @@ export default function App() {
           xPadding={0.2} // 바깥(X) 밴드
           innerPadding={0.2} // 시리즈 밴드
           padding={{ bottom: 60, left: 50 }}
-          y={{ min: 0, max: 100, ticks: { step: 25 } }}
+          y={{
+            min: 0,
+            max: 10000,
+            ticks: { step: 2000 },
+            formatTick: (v) => `${v / 1000}k`,
+          }}
         />
       </section>
 
@@ -87,7 +92,12 @@ export default function App() {
           bandPadding={0.2} // 바깥(Y) 밴드
           innerPadding={0.3} // 시리즈 밴드
           padding={{ left: 70, bottom: 30 }}
-          valueAxis={{ min: 0, max: 100, ticks: { step: 25 } }}
+          valueAxis={{
+            min: 0,
+            max: 10000,
+            ticks: { step: 2500 },
+            formatTick: (v) => `${v / 1000}k`,
+          }}
         />
       </section>
     </main>
