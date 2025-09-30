@@ -24,8 +24,7 @@ type BarChartProps = {
   height?: number;
   barColor?: string;
   rotateLabels?: boolean; // vertical에서 X 라벨 회전
-  xPadding?: number; // vertical: X 밴드 padding
-  bandPadding?: number; // horizontal: Y 밴드 padding
+  categoryGap?: number; // 카테고리(라벨) 간격
   valueAxis?: ValueAxisOpts; // 값축
   padding?: Partial<{
     top: number;
@@ -49,8 +48,7 @@ export default function BarChart({
   height = 360,
   barColor = "#60a5fa",
   rotateLabels = false,
-  xPadding = 0.2,
-  bandPadding = 0.2,
+  categoryGap = 0.2,
   valueAxis,
   padding,
 }: BarChartProps) {
@@ -95,8 +93,8 @@ export default function BarChart({
       <ChartWrapper height={height} padding={padding}>
         {({ innerWidth, innerHeight }) => {
           const band = isVertical
-            ? bandScale(labels, 0, innerWidth, xPadding) // X 밴드
-            : bandScale(labels, 0, innerHeight, bandPadding); // Y 밴드
+            ? bandScale(labels, 0, innerWidth, categoryGap) // X 밴드
+            : bandScale(labels, 0, innerHeight, categoryGap); // Y 밴드
 
           const valueScale = isVertical
             ? linearScale(vMin, vMax, innerHeight, 0) // 값→Y

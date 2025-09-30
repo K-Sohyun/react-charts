@@ -26,9 +26,8 @@ type BarGroupChartProps = {
   height?: number;
   seriesOrder?: string[];
   colors?: Record<string, string>;
-  xPadding?: number; // vertical: 바깥(X) 밴드
-  bandPadding?: number; // horizontal: 바깥(Y) 밴드
-  innerPadding?: number; // 안쪽(시리즈) 밴드
+  categoryGap?: number; // 카테고리(라벨) 간격
+  seriesGap?: number; // 시리즈 간격
   valueAxis?: ValueAxisOpts; // 값축
   padding?: Partial<{
     top: number;
@@ -53,9 +52,8 @@ export default function BarGroupChart({
   height = 360,
   seriesOrder,
   colors,
-  xPadding = 0.2,
-  bandPadding = 0.2,
-  innerPadding = 0.2,
+  categoryGap = 0.2,
+  seriesGap = 0.2,
   valueAxis,
   padding,
 }: BarGroupChartProps) {
@@ -118,14 +116,9 @@ export default function BarGroupChart({
         {({ innerWidth, innerHeight }) => {
           // 바깥/안쪽 밴드
           const outer = isVertical
-            ? bandScale(labels, 0, innerWidth, xPadding) // X 밴드
-            : bandScale(labels, 0, innerHeight, bandPadding); // Y 밴드
-          const inner = bandScale(
-            inferredKeys,
-            0,
-            outer.bandWidth,
-            innerPadding
-          );
+            ? bandScale(labels, 0, innerWidth, categoryGap) // X 밴드
+            : bandScale(labels, 0, innerHeight, categoryGap); // Y 밴드
+          const inner = bandScale(inferredKeys, 0, outer.bandWidth, seriesGap);
 
           // 값 축
           const valueScale = isVertical
