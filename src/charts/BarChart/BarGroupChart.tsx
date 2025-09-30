@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ChartWrapper from "../core/ChartWrapper";
 import { linearScale, bandScale } from "../core/scales";
 import { makeTicks, type YTicks } from "../core/ticks";
+import type { Padding } from "../core/types";
 import AxisLinear from "../core/AxisLinear";
 import AxisBand from "../core/AxisBand";
 import styles from "./BarChart.module.scss";
@@ -29,12 +30,7 @@ type BarGroupChartProps = {
   categoryGap?: number; // 카테고리(라벨) 간격
   seriesGap?: number; // 시리즈 간격
   valueAxis?: ValueAxisOpts; // 값축
-  padding?: Partial<{
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-  }>;
+  framePadding?: Partial<Padding>;
 };
 
 type TooltipState = {
@@ -55,7 +51,7 @@ export default function BarGroupChart({
   categoryGap = 0.2,
   seriesGap = 0.2,
   valueAxis,
-  padding,
+  framePadding,
 }: BarGroupChartProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -112,7 +108,7 @@ export default function BarGroupChart({
       ref={wrapperRef}
       className={`${styles.wrapper} ${isVertical ? styles.vert : styles.hori}`}
     >
-      <ChartWrapper height={height} padding={padding}>
+      <ChartWrapper height={height} framePadding={framePadding}>
         {({ innerWidth, innerHeight }) => {
           // 바깥/안쪽 밴드
           const outer = isVertical

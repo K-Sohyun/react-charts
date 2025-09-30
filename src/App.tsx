@@ -30,7 +30,7 @@ export default function App() {
           data={sample}
           orientation="vertical"
           rotateLabels
-          padding={{ bottom: 60, left: 50 }}
+          framePadding={{ bottom: 60, left: 50 }}
           valueAxis={{
             min: 0,
             max: 100,
@@ -48,7 +48,7 @@ export default function App() {
         <BarChart
           data={sample}
           orientation="horizontal"
-          padding={{ left: 70, bottom: 30 }}
+          framePadding={{ left: 70, bottom: 30 }}
           valueAxis={{
             min: 0,
             max: 100,
@@ -70,7 +70,7 @@ export default function App() {
           colors={{ data1: "#fbbf24", data2: "#60a5fa" }}
           categoryGap={0.2} // 라벨 간격
           seriesGap={0.2} // 시리즈 간격
-          padding={{ bottom: 60, left: 50 }}
+          framePadding={{ bottom: 60, left: 50 }}
           valueAxis={{
             min: 0,
             max: 10000,
@@ -91,7 +91,7 @@ export default function App() {
           colors={{ data1: "#fbbf24", data2: "#60a5fa" }}
           categoryGap={0.2} // 라벨 간격
           seriesGap={0.3} // 시리즈 간격
-          padding={{ left: 70, bottom: 30 }}
+          framePadding={{ left: 70, bottom: 30 }}
           valueAxis={{
             min: 0,
             max: 10000,

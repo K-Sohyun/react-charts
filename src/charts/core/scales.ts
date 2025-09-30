@@ -21,12 +21,12 @@ export const bandScale = (
   labels: string[],
   rMin: number,
   rMax: number,
-  padding = 0.2 // 기본값 props에서 주입 가능
+  gapRatio = 0.2 // 막대 사이 간격 비율 (0~1)
 ) => {
   const n = Math.max(labels.length, 1);
   const total = rMax - rMin;
 
-  const totalGap = total * padding;
+  const totalGap = total * gapRatio;
   const gapWidth = totalGap / (n + 1);
   const barWidth = (total - totalGap) / n;
 

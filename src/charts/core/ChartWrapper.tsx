@@ -1,11 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
-
-type Padding = { top: number; right: number; bottom: number; left: number };
+import type { Padding } from "../core/types";
 
 type ChartWrapperProps = {
   width?: number;
   height?: number;
-  padding?: Partial<Padding>;
+  framePadding?: Partial<Padding>;
   children: (inner: {
     innerWidth: number;
     innerHeight: number;
@@ -15,7 +14,7 @@ type ChartWrapperProps = {
 export default function ChartWrapper({
   width,
   height = 360,
-  padding,
+  framePadding,
   children,
 }: ChartWrapperProps) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -33,7 +32,7 @@ export default function ChartWrapper({
   }, [width]);
 
   const defaultPadding: Padding = { top: 24, right: 24, bottom: 40, left: 40 };
-  const pad: Padding = { ...defaultPadding, ...(padding ?? {}) };
+  const pad: Padding = { ...defaultPadding, ...(framePadding ?? {}) };
 
   const outerW = width ?? w;
   const innerWidth = outerW - pad.left - pad.right;

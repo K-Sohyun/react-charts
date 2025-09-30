@@ -3,6 +3,7 @@ import ChartWrapper from "../core/ChartWrapper";
 import { linearScale, bandScale } from "../core/scales";
 import { makeTicks } from "../core/ticks";
 import type { YTicks } from "../core/ticks";
+import type { Padding } from "../core/types";
 import AxisLinear from "../core/AxisLinear";
 import AxisBand from "../core/AxisBand";
 import styles from "./BarChart.module.scss";
@@ -26,12 +27,7 @@ type BarChartProps = {
   rotateLabels?: boolean; // vertical에서 X 라벨 회전
   categoryGap?: number; // 카테고리(라벨) 간격
   valueAxis?: ValueAxisOpts; // 값축
-  padding?: Partial<{
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-  }>;
+  framePadding?: Partial<Padding>;
 };
 
 type TooltipState = {
@@ -50,7 +46,7 @@ export default function BarChart({
   rotateLabels = false,
   categoryGap = 0.2,
   valueAxis,
-  padding,
+  framePadding,
 }: BarChartProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -90,7 +86,7 @@ export default function BarChart({
       ref={wrapperRef}
       className={`${styles.wrapper} ${isVertical ? styles.vert : styles.hori}`}
     >
-      <ChartWrapper height={height} padding={padding}>
+      <ChartWrapper height={height} framePadding={framePadding}>
         {({ innerWidth, innerHeight }) => {
           const band = isVertical
             ? bandScale(labels, 0, innerWidth, categoryGap) // X 밴드
