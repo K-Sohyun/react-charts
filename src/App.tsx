@@ -38,7 +38,7 @@ export default function App() {
             formatTick: (v) => `${v}명`,
           }}
           barColor="#60a5fa"
-          categoryGap={0.2}
+          categoryGap={0.3}
         />
       </section>
 
