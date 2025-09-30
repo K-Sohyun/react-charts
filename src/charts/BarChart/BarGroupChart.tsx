@@ -93,12 +93,12 @@ export default function BarGroupChart({
   const ticks = makeTicks(vMin, vMax, valueAxis?.ticks);
 
   const defaultPalette = [
-    "#60a5fa",
-    "#34d399",
-    "#fbbf24",
-    "#f87171",
-    "#a78bfa",
-    "#f472b6",
+    "#ffdb7b",
+    "#afc5db",
+    "#ffc2a0",
+    "#dbe1f0",
+    "#e6d6eb",
+    "#c9e7d3",
   ];
   const colorOf = (key: string, idx: number) =>
     colors?.[key] ?? defaultPalette[idx % defaultPalette.length];

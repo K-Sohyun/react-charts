@@ -55,8 +55,8 @@ export default function App() {
             ticks: { step: 10 },
             formatTick: (v) => `${v}%`,
           }}
-          barColor="#60a5fa"
-          categoryGap={0.2}
+          barColor="#fdc467"
+          categoryGap={0.3}
         />
       </section>
 
@@ -67,7 +67,7 @@ export default function App() {
           data={grouped}
           orientation="vertical"
           seriesOrder={["data1", "data2"]}
-          colors={{ data1: "#fbbf24", data2: "#60a5fa" }}
+          colors={{ data1: "#afc5db", data2: "#ffc2a0" }}
           categoryGap={0.2} // 라벨 간격
           seriesGap={0.2} // 시리즈 간격
           framePadding={{ bottom: 60, left: 50 }}
@@ -88,7 +88,7 @@ export default function App() {
           height={460}
           orientation="horizontal"
           seriesOrder={["data1", "data2"]}
-          colors={{ data1: "#fbbf24", data2: "#60a5fa" }}
+          colors={{ data1: "#c9e7d3", data2: "#afc5db" }}
           categoryGap={0.2} // 라벨 간격
           seriesGap={0.3} // 시리즈 간격
           framePadding={{ left: 70, bottom: 30 }}
