@@ -8,7 +8,15 @@ import AxisBand from "../core/AxisBand";
 import styles from "./BarChart.module.scss";
 
 export type BarDatum = { label: string; value: number };
+
 type Orientation = "vertical" | "horizontal";
+
+type ValueAxisOpts = {
+  min?: number;
+  max?: number;
+  ticks?: YTicks;
+  formatTick?: (v: number) => string | number;
+};
 
 type BarChartProps = {
   data: BarDatum[];
@@ -18,18 +26,7 @@ type BarChartProps = {
   rotateLabels?: boolean; // vertical에서 X 라벨 회전
   xPadding?: number; // vertical: X 밴드 padding
   bandPadding?: number; // horizontal: Y 밴드 padding
-  y?: {
-    min?: number;
-    max?: number;
-    ticks?: YTicks;
-    formatTick?: (v: number) => string | number;
-  }; // vertical 값축
-  valueAxis?: {
-    min?: number;
-    max?: number;
-    ticks?: YTicks;
-    formatTick?: (v: number) => string | number;
-  }; // horizontal 값축
+  valueAxis?: ValueAxisOpts; // 값축
   padding?: Partial<{
     top: number;
     right: number;
@@ -54,7 +51,6 @@ export default function BarChart({
   rotateLabels = false,
   xPadding = 0.2,
   bandPadding = 0.2,
-  y,
   valueAxis,
   padding,
 }: BarChartProps) {
@@ -71,10 +67,10 @@ export default function BarChart({
   const dataMax = values.length ? Math.max(...values, 0) : 0;
 
   const isVertical = orientation === "vertical";
-  const vMin = isVertical ? y?.min ?? 0 : valueAxis?.min ?? 0;
-  const vMaxRaw = isVertical ? y?.max ?? dataMax : valueAxis?.max ?? dataMax;
+  const vMin = valueAxis?.min ?? 0;
+  const vMaxRaw = valueAxis?.max ?? dataMax;
   const vMax = vMaxRaw === vMin ? vMin + 1 : vMaxRaw;
-  const ticks = makeTicks(vMin, vMax, isVertical ? y?.ticks : valueAxis?.ticks);
+  const ticks = makeTicks(vMin, vMax, valueAxis?.ticks);
 
   const updateTooltip = (
     e: React.MouseEvent<SVGRectElement, MouseEvent> | null,
@@ -115,7 +111,7 @@ export default function BarChart({
                 length={isVertical ? innerWidth : innerHeight}
                 side={isVertical ? "left" : "bottom"}
                 grid
-                formatTick={isVertical ? y?.formatTick : valueAxis?.formatTick}
+                formatTick={valueAxis?.formatTick}
               />
 
               {/* 2) 범주 축 */}

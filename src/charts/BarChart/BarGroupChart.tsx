@@ -13,6 +13,13 @@ export type GroupBarDatum = {
 
 type Orientation = "vertical" | "horizontal";
 
+type ValueAxisOpts = {
+  min?: number;
+  max?: number;
+  ticks?: YTicks;
+  formatTick?: (v: number) => string | number;
+};
+
 type BarGroupChartProps = {
   data: GroupBarDatum[];
   orientation?: Orientation;
@@ -22,18 +29,7 @@ type BarGroupChartProps = {
   xPadding?: number; // vertical: 바깥(X) 밴드
   bandPadding?: number; // horizontal: 바깥(Y) 밴드
   innerPadding?: number; // 안쪽(시리즈) 밴드
-  y?: {
-    min?: number;
-    max?: number;
-    ticks?: YTicks;
-    formatTick?: (v: number) => string | number;
-  }; // vertical 값축
-  valueAxis?: {
-    min?: number;
-    max?: number;
-    ticks?: YTicks;
-    formatTick?: (v: number) => string | number;
-  }; // horizontal 값축
+  valueAxis?: ValueAxisOpts; // 값축
   padding?: Partial<{
     top: number;
     right: number;
@@ -60,7 +56,6 @@ export default function BarGroupChart({
   xPadding = 0.2,
   bandPadding = 0.2,
   innerPadding = 0.2,
-  y,
   valueAxis,
   padding,
 }: BarGroupChartProps) {
@@ -98,10 +93,10 @@ export default function BarGroupChart({
   );
   const dataMax = allValues.length ? Math.max(...allValues, 0) : 0;
 
-  const vMin = isVertical ? y?.min ?? 0 : valueAxis?.min ?? 0;
-  const vMaxRaw = isVertical ? y?.max ?? dataMax : valueAxis?.max ?? dataMax;
+  const vMin = valueAxis?.min ?? 0;
+  const vMaxRaw = valueAxis?.max ?? dataMax;
   const vMax = vMaxRaw === vMin ? vMin + 1 : vMaxRaw;
-  const ticks = makeTicks(vMin, vMax, isVertical ? y?.ticks : valueAxis?.ticks);
+  const ticks = makeTicks(vMin, vMax, valueAxis?.ticks);
 
   const defaultPalette = [
     "#60a5fa",
@@ -146,7 +141,7 @@ export default function BarGroupChart({
                 length={isVertical ? innerWidth : innerHeight}
                 side={isVertical ? "left" : "bottom"}
                 grid
-                formatTick={isVertical ? y?.formatTick : valueAxis?.formatTick}
+                formatTick={valueAxis?.formatTick}
               />
 
               {/* 2) 범주 축 */}

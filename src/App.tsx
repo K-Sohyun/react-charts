@@ -31,7 +31,7 @@ export default function App() {
           orientation="vertical"
           rotateLabels
           padding={{ bottom: 60, left: 50 }}
-          y={{
+          valueAxis={{
             min: 0,
             max: 100,
             ticks: { step: 25 },
@@ -71,7 +71,7 @@ export default function App() {
           xPadding={0.2} // 바깥(X) 밴드
           innerPadding={0.2} // 시리즈 밴드
           padding={{ bottom: 60, left: 50 }}
-          y={{
+          valueAxis={{
             min: 0,
             max: 10000,
             ticks: { step: 2000 },
