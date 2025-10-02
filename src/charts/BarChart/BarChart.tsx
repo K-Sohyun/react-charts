@@ -42,7 +42,7 @@ export default function BarChart({
   data,
   orientation = "vertical",
   height = 360,
-  barColor = "#60a5fa",
+  barColor = "#73a7d9",
   rotateLabels = false,
   categoryGap = 0.2,
   valueAxis,

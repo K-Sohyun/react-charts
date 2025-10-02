@@ -75,5 +75,40 @@ table {
 
 .sub-title {
   font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-section {
+  margin-bottom: 8rem;
+}
+
+/* 차트 범례 CSS */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+
+  &--right {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    z-index: 10;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__color {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 2px;
+  }
+
+  &__label {
+    font-size: 1.2rem;
+  }
 }

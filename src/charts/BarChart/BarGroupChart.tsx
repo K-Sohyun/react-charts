@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import ChartWrapper from "../core/ChartWrapper";
-import { linearScale, bandScale } from "../core/scales";
-import { makeTicks, type YTicks } from "../core/ticks";
-import type { Padding } from "../core/types";
 import AxisLinear from "../core/AxisLinear";
 import AxisBand from "../core/AxisBand";
+import Legend from "../core/Legend";
+import { linearScale, bandScale } from "../core/scales";
+import { makeTicks, type YTicks } from "../core/ticks";
+import { createColorScale } from "../core/colorScale";
+import type { Padding } from "../core/types";
 import styles from "./BarChart.module.scss";
 
 export type GroupBarDatum = {
@@ -21,6 +23,11 @@ type ValueAxisOpts = {
   formatTick?: (v: number) => string | number;
 };
 
+type LegendOpts = {
+  show?: boolean;
+  position?: "top" | "right";
+};
+
 type BarGroupChartProps = {
   data: GroupBarDatum[];
   orientation?: Orientation;
@@ -31,14 +38,16 @@ type BarGroupChartProps = {
   seriesGap?: number; // 시리즈 간격
   valueAxis?: ValueAxisOpts; // 값축
   framePadding?: Partial<Padding>;
+  seriesLabels?: Record<string, string>;
+  legend?: LegendOpts; // 내부 Legend on/off & 위치
 };
 
 type TooltipState = {
   show: boolean;
   left: number;
   top: number;
-  label: string;
-  series: string;
+  label: string; // 카테고리 라벨
+  series: string; // 데이터 키
   value: number;
 };
 
@@ -52,8 +61,11 @@ export default function BarGroupChart({
   seriesGap = 0.2,
   valueAxis,
   framePadding,
+  seriesLabels,
+  legend = { show: true, position: "top" },
 }: BarGroupChartProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+
   const [isAnimated, setIsAnimated] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => setIsAnimated(true));
@@ -76,10 +88,14 @@ export default function BarGroupChart({
     });
   };
 
+  const displayOf = (key: string) => seriesLabels?.[key] ?? key;
+
   const isVertical = orientation === "vertical";
+
   const inferredKeys =
     seriesOrder ??
     Array.from(new Set(data.flatMap((d) => Object.keys(d.values))));
+
   const labels = data.map((d) => d.label);
 
   const allValues = data.flatMap((d) =>
@@ -90,24 +106,29 @@ export default function BarGroupChart({
   const vMin = valueAxis?.min ?? 0;
   const vMaxRaw = valueAxis?.max ?? dataMax;
   const vMax = vMaxRaw === vMin ? vMin + 1 : vMaxRaw;
+
   const ticks = makeTicks(vMin, vMax, valueAxis?.ticks);
 
-  const defaultPalette = [
-    "#ffdb7b",
-    "#afc5db",
-    "#ffc2a0",
-    "#dbe1f0",
-    "#e6d6eb",
-    "#c9e7d3",
-  ];
-  const colorOf = (key: string, idx: number) =>
-    colors?.[key] ?? defaultPalette[idx % defaultPalette.length];
+  // 차트/범례가 같은 color scale 사용
+  const colorOf = createColorScale(inferredKeys, colors);
 
   return (
     <div
       ref={wrapperRef}
       className={`${styles.wrapper} ${isVertical ? styles.vert : styles.hori}`}
     >
+      {/* 내부 Legend 렌더 (옵션) */}
+      {legend?.show && (
+        <Legend
+          seriesOrder={inferredKeys}
+          seriesLabels={
+            seriesLabels ?? Object.fromEntries(inferredKeys.map((k) => [k, k]))
+          }
+          getColor={colorOf}
+          position={legend.position ?? "top"}
+        />
+      )}
+
       <ChartWrapper height={height} framePadding={framePadding}>
         {({ innerWidth, innerHeight }) => {
           // 바깥/안쪽 밴드
@@ -172,7 +193,7 @@ export default function BarGroupChart({
                         width={bw}
                         height={h}
                         rx={6}
-                        fill={colorOf(key, si)}
+                        fill={colorOf(key)}
                         className={`${styles.bar} ${
                           isAnimated ? styles.barAnimated : ""
                         }`}
@@ -195,7 +216,7 @@ export default function BarGroupChart({
                             value: val,
                           })
                         }
-                        onMouseLeave={() => setTooltip(null)}
+                        onMouseLeave={() => updateTooltip(null)}
                       />
                     );
                   } else {
@@ -213,7 +234,7 @@ export default function BarGroupChart({
                         width={w}
                         height={bh}
                         rx={6}
-                        fill={colorOf(key, si)}
+                        fill={colorOf(key)}
                         className={`${styles.bar} ${
                           isAnimated ? styles.barAnimated : ""
                         }`}
@@ -236,7 +257,7 @@ export default function BarGroupChart({
                             value: val,
                           })
                         }
-                        onMouseLeave={() => setTooltip(null)}
+                        onMouseLeave={() => updateTooltip(null)}
                       />
                     );
                   }
@@ -253,7 +274,11 @@ export default function BarGroupChart({
           className={styles.tooltip}
           style={{ left: tooltip.left, top: tooltip.top }}
         >
-          <strong>{tooltip.label}</strong> · {tooltip.series}: {tooltip.value}
+          <strong>{tooltip.label}</strong>
+          {" · "}
+          {displayOf(tooltip.series)}
+          {" : "}
+          {tooltip.value}
         </div>
       )}
     </div>
