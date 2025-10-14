@@ -1,0 +1,53 @@
+.wrapper {
+  position: relative;
+  user-select: none;
+}
+
+/* 선 스타일 */
+.line {
+  stroke-dasharray: 1; /* 전체 길이를 1로 간주 */
+  stroke-dashoffset: 1; /* 처음엔 전부 숨김 */
+  animation: draw var(--line-dur, 900ms) ease-out forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 점 스타일 */
+.dot {
+  opacity: 0;
+  animation: fade var(--dot-fade, 200ms) ease forwards;
+  animation-delay: var(--line-dur, 900ms);
+}
+
+/* 면 스타일 */
+.area {
+  opacity: 0;
+  animation: fade var(--dot-fade, 200ms) ease forwards;
+  animation-delay: var(--line-dur, 900ms);
+}
+
+@keyframes fade {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 툴팁 */
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  padding: 0.6rem 0.8rem;
+  background: #111827;
+  color: #fff;
+  border-radius: 0.6rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}

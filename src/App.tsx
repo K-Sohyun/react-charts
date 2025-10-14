@@ -1,7 +1,9 @@
 import BarChart from "./charts/BarChart/BarChart";
 import BarGroupChart from "./charts/BarChart/BarGroupChart";
+import LineChart from "./charts/LineChart/LineChart";
 import type { BarDatum } from "./charts/BarChart/BarChart";
 import type { GroupBarDatum } from "./charts/BarChart/BarGroupChart";
+import type { LineDatum } from "./charts/LineChart/LineChart";
 
 // 1) 월별 매출(천만원) — 단일 세로
 const revenueMonthly: BarDatum[] = [
@@ -41,6 +43,15 @@ const deptProjects: GroupBarDatum[] = [
   { label: "영업", values: { completed: 64, waiting: 3, pending: 14 } },
   { label: "개발", values: { completed: 78, waiting: 5, pending: 26 } },
   { label: "디자인", values: { completed: 60, waiting: 2, pending: 8 } },
+];
+
+// 5) 라인차트 테스트
+const lineData: LineDatum[] = [
+  { label: "Jan", value: 1200 },
+  { label: "Feb", value: 1800 },
+  { label: "Mar", value: 900 },
+  { label: "Apr", value: 2300 },
+  { label: "May", value: 1500 },
 ];
 
 export default function App() {
@@ -128,6 +139,26 @@ export default function App() {
             formatTick: (v) => `${v}건`,
           }}
           legend={{ show: true, position: "right" }}
+        />
+      </section>
+
+      <section className="chart-section">
+        <h3 className="sub-title">라인차트 테스트</h3>
+        <LineChart
+          data={lineData}
+          height={340}
+          color="#60a5fa"
+          strokeWidth={2}
+          showDots={true}
+          area={false} // 면 채우기
+          categoryGap={0.2} // X 밴드 간격
+          rotateLabels={false} // X 라벨 회전
+          valueAxis={{
+            min: 0,
+            max: 2400,
+            ticks: { step: 600 },
+            formatTick: (v) => `${Math.round(v / 100)}h`,
+          }}
         />
       </section>
     </main>
