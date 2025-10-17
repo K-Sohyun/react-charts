@@ -34,6 +34,7 @@ type BarGroupChartProps = {
   height?: number;
   seriesOrder?: string[];
   colors?: Record<string, string>;
+  rotateLabels?: boolean; // vertical에서 X 라벨 회전
   categoryGap?: number; // 카테고리(라벨) 간격
   seriesGap?: number; // 시리즈 간격
   valueAxis?: ValueAxisOpts; // 값축
@@ -57,6 +58,7 @@ export default function BarGroupChart({
   height = 360,
   seriesOrder,
   colors,
+  rotateLabels = false,
   categoryGap = 0.2,
   seriesGap = 0.2,
   valueAxis,
@@ -162,6 +164,7 @@ export default function BarGroupChart({
                     getPos={outer.getX}
                     bandWidth={outer.bandWidth}
                     side="bottom"
+                    rotate={rotateLabels}
                     tickPadding={20}
                   />
                 </g>
