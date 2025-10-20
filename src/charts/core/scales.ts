@@ -1,6 +1,9 @@
 /**
  * linearScale
  * 데이터 값(dMin~dMax)을 화면 좌표(rMin~rMax)로 선형 변환
+ * 
+ * - dMin/dMax : 데이터 도메인 범위
+ * - rMin/rMax : 픽셀 좌표 범위
  */
 export const linearScale = (
   dMin: number,
@@ -16,12 +19,16 @@ export const linearScale = (
 /**
  * bandScale
  * 카테고리 라벨 배열을 일정 간격의 밴드 좌표로 변환
+ * 
+ * - labels : 카테고리 라벨 배열 (예: ["1월", "2월", "3월"])
+ * - rMin/rMax : 픽셀 좌표 범위 (예: 0 → innerWidth)
+ * - gapRatio : 막대차트는 0~1(간격 비율), 라인차트는 위치 조절 자유 값
  */
 export const bandScale = (
   labels: string[],
   rMin: number,
   rMax: number,
-  gapRatio = 0.2 // 막대 사이 간격 비율 (0~1)
+  gapRatio = 0.2
 ) => {
   const n = Math.max(labels.length, 1);
   const total = rMax - rMin;

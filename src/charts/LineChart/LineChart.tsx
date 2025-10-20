@@ -29,8 +29,6 @@ type LineChartProps = {
   valueAxis?: ValueAxisOpts;
   framePadding?: Partial<Padding>;
   area?: boolean; // 영역(면) 채우기
-  lineDurationMs?: number; // 라인 그리기 시간 (CSS var로 전달)
-  dotFadeMs?: number; // 점 페이드인 시간 (CSS var로 전달)
 };
 
 type TooltipState = {
@@ -53,8 +51,6 @@ export default function LineChart({
   valueAxis,
   framePadding,
   area = false,
-  lineDurationMs = 900,
-  dotFadeMs = 200,
 }: LineChartProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -87,13 +83,6 @@ export default function LineChart({
     <div
       ref={wrapperRef}
       className={styles.wrapper}
-      style={
-        {
-          // CSS 변수로 애니메이션 시간 전달
-          ["--line-dur" as any]: `${lineDurationMs}ms`,
-          ["--dot-fade" as any]: `${dotFadeMs}ms`,
-        } as React.CSSProperties
-      }
     >
       <ChartWrapper height={height} framePadding={framePadding}>
         {({ innerWidth, innerHeight }) => {
@@ -120,7 +109,7 @@ export default function LineChart({
 
           const areaD = useMemo(() => {
             if (!area || !points.length) return "";
-            const baselineY = yScale(0);
+            const baselineY = yScale(vMin); // Y축 최솟값을 기준으로 설정
             const [first, ...rest] = points;
             const main = ["M", first.cx, first.cy]
               .concat(...rest.map((p) => ["L", p.cx, p.cy]))
@@ -129,7 +118,7 @@ export default function LineChart({
               first.cx
             } ${baselineY} Z`;
             return `${main} ${closing}`;
-          }, [area, points, yScale]);
+          }, [area, points, yScale, vMin]);
 
           return (
             <>
