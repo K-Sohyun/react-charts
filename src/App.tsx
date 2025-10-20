@@ -1,9 +1,11 @@
 import BarChart from "./charts/BarChart/BarChart";
 import BarGroupChart from "./charts/BarChart/BarGroupChart";
 import LineChart from "./charts/LineChart/LineChart";
+import LineGroupChart from "./charts/LineChart/LineGroupChart";
 import type { BarDatum } from "./charts/BarChart/BarChart";
 import type { GroupBarDatum } from "./charts/BarChart/BarGroupChart";
 import type { LineDatum } from "./charts/LineChart/LineChart";
+import type { GroupLineDatum } from "./charts/LineChart/LineGroupChart";
 
 // 1) 단일 세로
 const barSample: BarDatum[] = [
@@ -54,6 +56,24 @@ const lineSample: LineDatum[] = [
   { label: "5월", value: 15800 },
   { label: "6월", value: 19600 },
   { label: "7월", value: 22400 },
+];
+
+// 6) 그룹 라인
+const lineSample2: GroupLineDatum[] = [
+  { label: "1월", values: { sales: 100, cost: 60, profit: 40 } },
+  { label: "2월", values: { sales: 120, cost: 70, profit: 50 } },
+  { label: "3월", values: { sales: 110, cost: 65, profit: 45 } },
+  { label: "4월", values: { sales: 130, cost: 75, profit: 55 } },
+  { label: "5월", values: { sales: 140, cost: 80, profit: 60 } },
+  { label: "6월", values: { sales: 125, cost: 68, profit: 57 } },
+];
+
+// 7) 그룹 라인 (면 활성화)
+const lineSample3: GroupLineDatum[] = [
+  { label: "Q1", values: { sales: 85, development: 92, design: 78 } },
+  { label: "Q2", values: { sales: 88, development: 95, design: 82 } },
+  { label: "Q3", values: { sales: 90, development: 98, design: 85 } },
+  { label: "Q4", values: { sales: 93, development: 96, design: 88 } },
 ];
 
 export default function App() {
@@ -163,6 +183,69 @@ export default function App() {
             ticks: { step: 5000 },
             formatTick: (v) => `${Math.round(v / 1000)}K`,
           }}
+        />
+      </section>
+
+      {/* 6) 그룹 라인 */}
+      <section className="chart-section">
+        <h3 className="sub-title">그룹 라인 차트</h3>
+        <LineGroupChart
+          data={lineSample2}
+          height={380}
+          seriesOrder={["sales", "cost", "profit"]}
+          seriesLabels={{ sales: "매출액", cost: "비용", profit: "순이익" }}
+          colors={{
+            sales: "#4f83cc",
+            cost: "#ff6b6b",
+            profit: "#51cf66",
+          }}
+          strokeWidth={2}
+          showDots={true}
+          dotRadius={3}
+          area={false}
+          categoryGap={0.4}
+          rotateLabels={false}
+          valueAxis={{
+            min: 0,
+            max: 160,
+            ticks: { step: 40 },
+            formatTick: (v) => `${v}M`,
+          }}
+          legend={{ show: true, position: "top" }}
+        />
+      </section>
+
+      {/* 7) 그룹 라인 (면 활성화) */}
+      <section className="chart-section">
+        <h3 className="sub-title">그룹 라인 차트 (면 활성화)</h3>
+        <LineGroupChart
+          data={lineSample3}
+          height={400}
+          seriesOrder={["sales", "development", "design"]}
+          seriesLabels={{
+            sales: "영업팀",
+            development: "개발팀",
+            design: "디자인팀",
+          }}
+          colors={{
+            sales: "#ffa726",
+            development: "#42a5f5",
+            design: "#ab47bc",
+          }}
+          strokeWidth={2}
+          showDots={true}
+          dotRadius={3}
+          area={true} // 면 채우기 활성화
+          categoryGap={0.15}
+          rotateLabels={false}
+          framePadding={{ top: 50 }}
+          valueAxis={{
+            min: 70,
+            max: 100,
+            ticks: { step: 10 },
+            formatTick: (v) => `${v}점`,
+          }}
+          legend={{ show: true, position: "right" }}
         />
       </section>
     </main>
