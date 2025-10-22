@@ -70,10 +70,10 @@ const lineSample2: GroupLineDatum[] = [
 
 // 7) 그룹 라인 (면 활성화)
 const lineSample3: GroupLineDatum[] = [
-  { label: "Q1", values: { sales: 85, development: 92, design: 78 } },
-  { label: "Q2", values: { sales: 88, development: 95, design: 82 } },
-  { label: "Q3", values: { sales: 90, development: 98, design: 85 } },
-  { label: "Q4", values: { sales: 93, development: 96, design: 88 } },
+  { label: "Q1", values: { teamA: 85, teamB: 92, teamC: 78 } },
+  { label: "Q2", values: { teamA: 88, teamB: 95, teamC: 82 } },
+  { label: "Q3", values: { teamA: 90, teamB: 98, teamC: 85 } },
+  { label: "Q4", values: { teamA: 93, teamB: 96, teamC: 88 } },
 ];
 
 export default function App() {
@@ -221,16 +221,16 @@ export default function App() {
         <LineGroupChart
           data={lineSample3}
           height={400}
-          seriesOrder={["sales", "development", "design"]}
+          seriesOrder={["teamA", "teamB", "teamC"]}
           seriesLabels={{
-            sales: "영업팀",
-            development: "개발팀",
-            design: "디자인팀",
+            teamA: "A팀",
+            teamB: "B팀",
+            teamC: "C팀",
           }}
           colors={{
-            sales: "#ffa726",
-            development: "#42a5f5",
-            design: "#ab47bc",
+            teamA: "#ffa726",
+            teamB: "#42a5f5",
+            teamC: "#ab47bc",
           }}
           strokeWidth={2}
           showDots={true}
