@@ -209,7 +209,7 @@ export default function App() {
             min: 0,
             max: 160,
             ticks: { step: 40 },
-            formatTick: (v) => `${v}M`,
+            formatTick: (v) => `${v}억`,
           }}
           legend={{ show: true, position: "top" }}
         />
