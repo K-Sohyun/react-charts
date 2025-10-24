@@ -9,12 +9,12 @@ export const DEFAULT_PALETTE = [
 
 export function createColorScale(
   order: string[],
-  overrides?: Record<string, string>,
+  customColors?: Record<string, string>,
   palette: string[] = DEFAULT_PALETTE
 ) {
   const map = new Map<string, string>();
-  if (overrides)
-    for (const k of Object.keys(overrides)) map.set(k, overrides[k]);
+  if (customColors)
+    for (const k of Object.keys(customColors)) map.set(k, customColors[k]);
   order.forEach((k, i) => {
     if (!map.has(k)) map.set(k, palette[i % palette.length]);
   });
